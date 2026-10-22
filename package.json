@@ -1,0 +1,23 @@
+{
+  "name": "landrop-lan-transfer",
+  "version": "1.0.0",
+  "private": true,
+  "description": "局域网文件快传 · 扫码或输入 4 位识别码，在同一 WiFi 下的设备之间高速互传文件（一传一 / 一传多）",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js --port 5178"
+  },
+  "keywords": [
+    "lan",
+    "file-transfer",
+    "airdrop",
+    "localsend",
+    "qrcode",
+    "webrtc-alternative"
+  ],
+  "engines": {
+    "node": ">=16"
+  },
+  "license": "MIT"
+}

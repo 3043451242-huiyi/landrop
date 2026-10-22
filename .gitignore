@@ -1,0 +1,8 @@
+node_modules/
+.tmpdeps/
+uploads/
+workbuddy/
+*.log
+.DS_Store
+Thumbs.db
+.workbuddy/
