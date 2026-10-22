@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#4f46e5" />
+<title>局域快传 · LanDrop | 同一 WiFi 扫码互传文件（P2P 直传）</title>
+<meta name="description" content="纯网页版局域网文件快传：同一 WiFi 下扫码或输入 4 位识别码即可互传文件，支持一传一与一传多，WebRTC 点对点直传，文件不经过任何服务器。" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%234f46e5'/%3E%3Cpath d='M32 18v22m0-22 9 9m-9-9-9 9' stroke='white' stroke-width='5' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3Cpath d='M20 45h24' stroke='white' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E" />
+<link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+
+<svg class="sprite" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.07 0l2.12-2.12a5 5 0 0 0-7.07-7.07L10.7 5.22" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M14 11a5 5 0 0 0-7.07 0L4.8 13.12a5 5 0 0 0 7.07 7.07l1.4-1.4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="12" height="12" rx="3" stroke="currentColor" stroke-width="2"/><path d="M15 5.5A2.5 2.5 0 0 0 12.5 3H6a3 3 0 0 0-3 3v6.5A2.5 2.5 0 0 0 5.5 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 16V4m0 0 4.5 4.5M12 4 7.5 8.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 15v3a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3 8a3 3 0 0 1 3-3h4l2 2.5h6a3 3 0 0 1 3 3V17a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3V8Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v12m0 0 4.5-4.5M12 16l-4.5-4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 17v1a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-1" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2m-9 0 1 12a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2l1-12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-power" viewBox="0 0 24 24"><path d="M12 3v9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M7.5 6.5a8 8 0 1 0 9 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="2"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M19.1 4.9l-1.4 1.4M6.3 17.7l-1.4 1.4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M21 13.2A8.5 8.5 0 1 1 10.8 3a6.8 6.8 0 0 0 10.2 10.2Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+  <symbol id="i-wifi" viewBox="0 0 24 24"><path d="M2.5 8.5a15 15 0 0 1 19 0M5.5 12.2a10.5 10.5 0 0 1 13 0M8.6 15.9a6 6 0 0 1 6.8 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="19.5" r="1.4" fill="currentColor"/></symbol>
+  <symbol id="i-phone" viewBox="0 0 24 24"><rect x="6.5" y="2.5" width="11" height="19" rx="3" stroke="currentColor" stroke-width="2"/><path d="M11 18.5h2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l7 3v5.5c0 4.4-3 8.1-7 9.5-4-1.4-7-5.1-7-9.5V6l7-3Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="m9 12 2 2 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 2 4.5 13.5H11l-1 8.5 8.5-11.5H12l1-8.5Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+  <symbol id="i-qr" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="2"/><rect x="14" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="2"/><rect x="3" y="14" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="2"/><path d="M14 14h3v3h-3zM20 14v.01M14 20v.01M20 20v.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+</svg>
+
+<div class="bg-decor" aria-hidden="true">
+  <span class="orb orb-1"></span>
+  <span class="orb orb-2"></span>
+  <span class="orb orb-3"></span>
+  <span class="grid-mask"></span>
+</div>
+
+<header class="topbar">
+  <div class="brand">
+    <div class="brand-mark">
+      <svg viewBox="0 0 24 24" width="22" height="22"><path d="M12 16V4m0 0 4.5 4.5M12 4 7.5 8.5" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" stroke="#fff" stroke-width="2.2" stroke-linecap="round" fill="none"/></svg>
+    </div>
+    <div class="brand-text">
+      <strong>局域快传</strong>
+      <span>LAN DROP · P2P</span>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <div class="sig-chip" id="sigChip" title="配对信令状态（仅用于握手，不传文件）">
+      <i></i><span id="sigText">未连接</span>
+    </div>
+    <button class="icon-btn" id="themeBtn" title="切换深浅色" aria-label="切换深浅色">
+      <svg width="18" height="18"><use href="#i-moon"/></svg>
+    </button>
+  </div>
+</header>
+
+<main class="page">
+
+  <!-- ================= 大厅 ================= -->
+  <section id="viewLobby" class="view">
+    <div class="hero">
+      <span class="eyebrow"><span class="pulse"></span>纯网页 · 无需安装 · 点对点直传</span>
+      <h1>扫码就连上，<span class="grad">文件只走局域网</span></h1>
+      <p class="hero-sub">手机、电脑、平板打开同一个网址即可互传。配对靠一条极轻的信令握手，文件本身通过 WebRTC
+        在两台设备之间直连，不经过任何服务器，速度跑满你的路由器。</p>
+    </div>
+
+    <div class="lobby-grid">
+      <div class="card create-card">
+        <div class="card-head">
+          <span class="icon-badge"><svg width="18" height="18"><use href="#i-plus"/></svg></span>
+          <div>
+            <h2>新建会话</h2>
+            <p>成为房主，生成识别码与二维码</p>
+          </div>
+        </div>
+        <label class="field">
+          <span>我的设备名称</span>
+          <input id="nameCreate" maxlength="18" placeholder="例如：我的笔记本" autocomplete="off" />
+        </label>
+        <button class="btn primary lg block" id="createBtn">生成识别码</button>
+        <ul class="mini-list">
+          <li><svg width="14" height="14"><use href="#i-check"/></svg>其他设备扫码或输码后自动建立 P2P 通道</li>
+          <li><svg width="14" height="14"><use href="#i-check"/></svg>房主可一次发给多台设备（一传多）</li>
+          <li><svg width="14" height="14"><use href="#i-check"/></svg>文件不落任何服务器，关掉页面即结束</li>
+        </ul>
+      </div>
+
+      <div class="card join-card">
+        <div class="card-head">
+          <span class="icon-badge alt"><svg width="18" height="18"><use href="#i-link"/></svg></span>
+          <div>
+            <h2>加入会话</h2>
+            <p>输入对方页面上的识别码</p>
+          </div>
+        </div>
+        <label class="field">
+          <span>我的设备名称</span>
+          <input id="nameJoin" maxlength="18" placeholder="例如：我的手机" autocomplete="off" />
+        </label>
+        <label class="field">
+          <span>4 位识别码</span>
+          <input id="codeInput" class="code-input" inputmode="numeric" pattern="[0-9]*" maxlength="4"
+                 placeholder="0000" autocomplete="off" />
+        </label>
+        <button class="btn lg block" id="joinBtn">连接</button>
+        <p class="tiny-tip">扫码后会自动填入识别码，无需手输。</p>
+      </div>
+    </div>
+
+    <div class="feature-row">
+      <div class="feature">
+        <span class="f-icon"><svg width="18" height="18"><use href="#i-shield"/></svg></span>
+        <div><strong>不过服务器</strong><p>文件走 WebRTC 直连，端到端加密</p></div>
+      </div>
+      <div class="feature">
+        <span class="f-icon"><svg width="18" height="18"><use href="#i-bolt"/></svg></span>
+        <div><strong>智能提速</strong><p>先小包试连，通了自动切高速</p></div>
+      </div>
+      <div class="feature">
+        <span class="f-icon"><svg width="18" height="18"><use href="#i-phone"/></svg></span>
+        <div><strong>跨平台</strong><p>iOS / 安卓 / Windows / Mac 通用</p></div>
+      </div>
+      <div class="feature">
+        <span class="f-icon"><svg width="18" height="18"><use href="#i-qr"/></svg></span>
+        <div><strong>两种连接</strong><p>扫二维码或输 4 位识别码</p></div>
+      </div>
+    </div>
+
+    <div class="notice">
+      <strong>使用前请确认</strong>
+      <ul>
+        <li>两台设备连接的是<strong>同一个 WiFi / 路由器</strong>，且未开启「AP 隔离」（部分公共 WiFi 会禁止设备互访）。</li>
+        <li>本页面是纯静态网页，不需要安装任何程序，也不需要本机跑服务；配对阶段需要一次很轻的信令握手（几百字节）。</li>
+        <li>配对连不上时，可展开会话页里的「手动配对」，用两段文本完成握手（完全离线可用）。</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ================= 会话 ================= -->
+  <section id="viewRoom" class="view hidden">
+    <div class="room-layout">
+
+      <aside class="side-col">
+        <div class="card code-card">
+          <div class="code-head">
+            <span class="label">识别码</span>
+            <div class="code-actions">
+              <button class="mini-btn" id="copyCodeBtn" title="复制识别码">
+                <svg width="14" height="14"><use href="#i-copy"/></svg>复制
+              </button>
+              <button class="mini-btn qr-toggle" id="qrToggleBtn" title="显示二维码">
+                <svg width="14" height="14"><use href="#i-qr"/></svg>二维码
+              </button>
+            </div>
+          </div>
+          <div class="code-display" id="codeDisplay">····</div>
+          <p class="code-hint">让对方在「加入会话」中输入这 4 位数字</p>
+          <div class="role-hint" id="roleHint">
+            <svg width="14" height="14"><use href="#i-wifi"/></svg><span id="roleText"></span>
+          </div>
+        </div>
+
+        <div class="card qr-card" id="qrCard">
+          <div class="qr-box" id="qrBox"></div>
+          <p class="qr-tip">手机相机扫码直接加入</p>
+          <div class="share-link">
+            <input id="shareUrl" readonly />
+            <button class="mini-btn icon" id="copyLinkBtn" title="复制链接">
+              <svg width="15" height="15"><use href="#i-link"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="card peers-card">
+          <div class="peers-head">
+            <span>在线设备 <b id="peerCount">1</b></span>
+            <span class="live"><i></i>实时</span>
+          </div>
+          <ul class="peer-list" id="peerList"></ul>
+          <button class="btn danger-ghost block sm" id="leaveBtn">
+            <svg width="14" height="14"><use href="#i-power"/></svg>退出会话
+          </button>
+        </div>
+      </aside>
+
+      <section class="main-col">
+        <div class="card drop-zone" id="dropZone">
+          <div class="dz-glow"></div>
+          <div class="dz-inner">
+            <span class="dz-icon"><svg width="26" height="26"><use href="#i-upload"/></svg></span>
+            <h2>点击选择文件，或拖拽到这里</h2>
+            <p class="dz-sub">多选、拖文件夹都可以；文件点对点直推给对方设备</p>
+            <div class="dz-actions">
+              <button class="btn primary" id="pickBtn">
+                <svg width="16" height="16"><use href="#i-upload"/></svg>选择文件
+              </button>
+              <button class="btn ghost" id="pickDirBtn">
+                <svg width="16" height="16"><use href="#i-folder"/></svg>选择文件夹
+              </button>
+              <label class="target-pick">
+                <span>发送给</span>
+                <select id="targetSelect"><option value="all">会话内所有设备</option></select>
+              </label>
+            </div>
+            <p class="alone-hint" id="aloneHint" hidden></p>
+          </div>
+          <input type="file" id="fileInput" multiple hidden />
+          <input type="file" id="dirInput" webkitdirectory directory multiple hidden />
+        </div>
+
+        <div class="card transfer-card">
+          <div class="tp-head">
+            <div class="tp-title">
+              <h2>传输记录</h2>
+              <span class="count" id="fileCount">0</span>
+              <span class="live-stat" id="liveStat"></span>
+            </div>
+            <div class="tp-tools">
+              <label class="switch" title="收到文件后直接保存">
+                <input type="checkbox" id="autoReceive" />
+                <span class="track"></span>
+                <span>自动保存</span>
+              </label>
+              <button class="btn ghost sm" id="saveAllBtn" hidden>全部保存</button>
+              <button class="btn ghost sm icon-only" id="clearBtn" title="清空已完成记录">
+                <svg width="15" height="15"><use href="#i-trash"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="transfer-list" id="transferList">
+            <div class="empty" id="emptyState">
+              <span class="empty-icon"><svg width="26" height="26"><use href="#i-upload"/></svg></span>
+              <p>还没有传输记录</p>
+              <span>选择文件发送，或等待对方发来文件</span>
+            </div>
+          </div>
+        </div>
+
+        <details class="card manual" id="manualPanel">
+          <summary>信令连不上？用手动配对（离线可用）</summary>
+          <div class="manual-body">
+            <div class="manual-step">
+              <h4>① 在「发起方」生成邀请码</h4>
+              <p>点按钮后把这串文本发给对方（微信/短信均可）。</p>
+              <button class="btn ghost sm" id="manualOfferBtn">生成邀请码</button>
+              <textarea id="manualOffer" readonly placeholder="尚未生成"></textarea>
+              <button class="mini-btn" id="copyOfferBtn">复制邀请码</button>
+            </div>
+            <div class="manual-step">
+              <h4>② 在「加入方」粘贴邀请码</h4>
+              <p>粘贴后生成应答码，再回传给发起方。</p>
+              <textarea id="manualAnswerIn" placeholder="粘贴对方的邀请码"></textarea>
+              <button class="btn ghost sm" id="manualAnswerBtn">生成应答码</button>
+              <textarea id="manualAnswerOut" readonly placeholder="生成后复制给发起方"></textarea>
+            </div>
+            <div class="manual-step">
+              <h4>③ 发起方粘贴应答码</h4>
+              <p>粘贴后点完成，通道即刻建立。</p>
+              <textarea id="manualFinalIn" placeholder="粘贴对方回传的应答码"></textarea>
+              <button class="btn primary sm" id="manualFinalBtn">完成配对</button>
+            </div>
+          </div>
+        </details>
+      </section>
+    </div>
+  </section>
+</main>
+
+<div class="toasts" id="toasts" aria-live="polite"></div>
+
+<script src="./vendor/qrcode.js"></script>
+<script src="./vendor/mqtt-lite.js"></script>
+<script src="./app.js"></script>
+</body>
+</html>

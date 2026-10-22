@@ -86,7 +86,7 @@ async function postJson(url, body) {
 }
 
 (async () => {
-  const server = spawn(process.execPath, ['server.js', '--port', String(PORT)], {
+  const server = spawn(process.execPath, ['server-mode/server.js', '--port', String(PORT)], {
     cwd: ROOT,
     stdio: ['ignore', 'pipe', 'pipe'],
   });
